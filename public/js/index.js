@@ -14,9 +14,26 @@ socket.on('connect', function() {
 //
 // });
 
-socket.on('newMessage', (newMsg) => {
+socket.on('newMessage', function(newMsg) {
   console.log('Got new message', newMsg);
+
+  var li = jQuery('<li></li>');
+  li.text(`${newMsg.from}: ${newMsg.text}`);
+  jQuery('#messages').append(li);
+  
+  });
+
+jQuery('#message-form').on('submit', function(e) {
+    e.preventDefault();
+
+  socket.emit('createMessage', {
+    from: 'User',
+    text: jQuery('[name=message]').val()
+  }, function() {
+
+  });
 });
+
 
 // socket.on('newEmail', function(email) {
 //   console.log('New email', email);
