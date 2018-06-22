@@ -17,7 +17,15 @@ function scrollToBottom() {
 };
 
 socket.on('connect', function() {
-  console.log('Connected to server');
+  // console.log('Connected to server');
+  var searchParams = jQuery.deparam(window.location.search);
+    socket.emit('join', searchParams, function(err) {
+      if(err)
+      {
+        alert(err);
+        window.location.href = '/';
+      }
+    });
 });
 // socket.emit('createEmail', {
 //   to: 'mohit@gmail',
@@ -30,6 +38,17 @@ socket.on('connect', function() {
 //   });
 //
 // });
+
+socket.on('updateUserList', function(users) {
+  var ol = jQuery('<ol></ol>');
+
+  users.forEach(function(userName) {
+    ol.append(jQuery('<li></li>').text(userName));
+  });
+
+  jQuery('#users').html(ol);
+
+});
 
 socket.on('newMessage', function(newMsg) {
 
