@@ -17,7 +17,6 @@ function scrollToBottom() {
 };
 
 socket.on('connect', function() {
-  // console.log('Connected to server');
   var searchParams = jQuery.deparam(window.location.search);
     socket.emit('join', searchParams, function(err) {
       if(err)
@@ -27,6 +26,7 @@ socket.on('connect', function() {
       }
     });
 });
+
 // socket.emit('createEmail', {
 //   to: 'mohit@gmail',
 //   text: 'This is an email'

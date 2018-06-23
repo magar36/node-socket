@@ -8,19 +8,34 @@ const publicPath = path.join(__dirname, '../public');
 const {generateMessage, generateLocationMessage} = require('./utils/message');
 const {isValidString} = require('./utils/validation');
 const {Users} = require('./utils/users');
-const port = process.env.PORT || 2400;
 
+const port = process.env.PORT || 2400;
 const app = express();
 const httpServer = http.createServer(app);
 const io = socketIO(httpServer);
 var users = new Users();
 
+app.use(express.static(publicPath));
+
 io.on('connection', (socket) => {
   console.log('New user connected');
+
+  var roomList = users.userArr.map((user) => user.room);
+  if(roomList) {
+    socket.broadcast.emit('actvRoomList', roomList);
+    console.log(roomList);
+  };
 
   socket.on('join', (params, callback) => {
     if (!isValidString(params.name) || !isValidString(params.room)) {
       return callback('Please enter a valid name and room');
+    };
+
+//check if same username exists in the chatroom
+    var userList = users.getUserList(params.room);
+    var userIndex = userList.findIndex((user) => user === params.name);
+    if (userIndex >= 0) {
+      return callback('Username already exists.');
     };
 
     socket.join(params.room);
@@ -86,8 +101,6 @@ io.on('connection', (socket) => {
     };
   });
 });
-
-app.use(express.static(publicPath));
 
 httpServer.listen(port, () => {
   console.log(`The server is running on port ${port}`)
