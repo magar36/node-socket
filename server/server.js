@@ -21,9 +21,9 @@ io.on('connection', (socket) => {
   console.log('New user connected');
 
   var roomList = users.userArr.map((user) => user.room);
-  if(roomList) {
-    socket.broadcast.emit('actvRoomList', roomList);
-    console.log(roomList);
+  var uniqRoomList = [...new Set(roomList)];
+  if(uniqRoomList) {
+    socket.emit('actvRoomList', uniqRoomList);
   };
 
   socket.on('join', (params, callback) => {
