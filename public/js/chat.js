@@ -88,10 +88,13 @@ socket.on('newLocationMessage', function(locationMsg) {
 jQuery('#message-form').on('submit', function(e) {
   e.preventDefault();
 
-  var formText = jQuery('[name=message]')
+  var formText = jQuery('[name=message]');
+  var searchParams = jQuery.deparam(window.location.search);
+
   socket.emit('createMessage', {
-    from: 'User',
-    text: formText.val()
+    from: searchParams.name,
+    text: formText.val(),
+    room: searchParams.room
   }, function() {
     formText.val('');
   });
@@ -104,14 +107,17 @@ locationButton.on('click', function() {
     alert('Geolocation not supported on the browser');
   };
 
+  var searchParams = jQuery.deparam(window.location.search);
   locationButton.attr('disabled','disabled').text('Sending location...');
 
   navigator.geolocation.getCurrentPosition(function(position) {
 
-    locationButton.removeAttr('disabled').text('Send location');;
+    locationButton.removeAttr('disabled').text('Send location');
     socket.emit('createLocationMessage', {
       latitude: position.coords.latitude,
-      longitude: position.coords.longitude
+      longitude: position.coords.longitude,
+      name: searchParams.name,
+      room: searchParams.room
     });
 
   }, function() {

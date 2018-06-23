@@ -54,9 +54,7 @@ io.on('connection', (socket) => {
   // socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined.'));
 
   socket.on('createMessage', (createMsg, callback) => {
-    console.log('Create Message', createMsg);
-
-    io.emit('newMessage', generateMessage(createMsg.from, createMsg.text));
+    io.to(createMsg.room).emit('newMessage', generateMessage(createMsg.from, createMsg.text));
     callback();
     //{
     //   from: createMsg.from,
@@ -72,7 +70,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('createLocationMessage', (coords) => {
-      io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
+      io.to(coords.room).emit('newLocationMessage', generateLocationMessage(coords.name, coords.latitude, coords.longitude));
 });
 
   socket.on('disconnect',() => {
